@@ -1,21 +1,17 @@
 """
-Multiline formatting
+Multiline string formatting
 
 Author: Pit
+
+Acknowledgements: Thanks to Will for highlighting the importance
+of automated boxes! You are my inspiration.
 """
 
 #BOX: (generates a box around a string)
 #takes string to add box around, and parameters for width, justification, border, and padding
 #returns formatted string
-def box(toFormat, width = 0, justify = "c", boxChar = '#', isPadded = True):
-    #Check each line to see if it has a greater width than the user defined width
-    #If it does, update the width
-    for line in toFormat.splitlines():
-        if isPadded:
-            if len(line) + 4 > width:
-                width = len(line) + 4
-        elif len(line) + 2 > width:
-            width = len(line) + 2
+def box(toFormat, boxChar = '|',width = 0, justify = "c", isPadded = True):
+    width = _Check_Width(width, toFormat, isPadded)
 
     #Format the box
     #Add the top border (with padding if applicable)
@@ -46,10 +42,10 @@ def box(toFormat, width = 0, justify = "c", boxChar = '#', isPadded = True):
 
     return formattedStr
 
-#COLUMN - FORMATS MULTILINE INTO COLUMNS
-def col(toFormat, colWidth = "auto", just = "c", colChar = "|"):
+#COLUMN: Formats mutliline string into columns.
+def col(toFormat, colChar = "|", colWidth = "auto", just = "c", delimiter = " "):
     
-    #Check for widest word to set column width
+    #Check for widest cell to set column width
     try:
         maxWidth = int(colWidth)
     except:
@@ -57,17 +53,77 @@ def col(toFormat, colWidth = "auto", just = "c", colChar = "|"):
         
     if colWidth == "auto":
         
-        #Check length of each word againt maxWidth
-        for word in toFormat.split():
-            if len(word) > maxWidth:
-                maxWidth = len(word)
+        #Check length of each cell againt maxWidth
+        for cell in toFormat.split(delimiter):
+            if len(cell) > maxWidth:
+                maxWidth = len(cell)
 
     #Format the columns
     formattedStr = ""
     for line in toFormat.splitlines():
-        formattedStr += "\n"
-        for word in line.split():
-            formattedStr += colChar + word.center(maxWidth)
-        formattedStr += colChar
+        
+        for cell in line.split(delimiter):
+            funcDict = {
+                "c" : cell.center,
+                "l" : cell.ljust,
+                "r" : cell.rjust
+            }
 
-    print(formattedStr)
+            #Determine whether cell contains integer value
+            isInt = False
+            try:
+                cell = int(cell)
+                isInt = True
+            except:
+                pass
+            cell = str(cell)
+
+            #Justify the current cell
+            if not isInt:    
+                formattedStr += colChar + funcDict[just](maxWidth)
+            else:
+                formattedStr += colChar + cell.rjust(maxWidth)
+                
+        formattedStr += colChar
+        formattedStr += "\n"
+
+    return(formattedStr)
+
+#FLAIR: Bring some life
+def flair(toFormat, flairChar = "~", width = "auto", just = "c"):
+    #Determine the length of the longest line
+    maxLineWidth = _Check_Width(0, toFormat, False)
+    #If no total width provided, allocate 5 spaces outside longest line
+    try:
+        width = int(width)
+    except:
+        width = maxLineWidth + 10
+        
+
+    formattedStr = ""
+    for line in toFormat.splitlines():
+        
+        funcDict = {
+            "c" : line.center,
+            "l" : line.ljust,
+            "r" : line.rjust
+        }
+        formattedStr+= funcDict[just](width, flairChar) 
+
+        formattedStr+="\n"
+
+    return formattedStr
+
+    
+#Check each line to see if it has a greater width than the user defined width
+#If it does, update the width    
+def _Check_Width(testWidth, toTest, isPadded):
+    for line in toTest.splitlines():
+        if isPadded:
+            if len(line) + 4 > testWidth:
+                testWidth = len(line) + 4
+        elif len(line) + 2 > testWidth:
+            testWidth = len(line) + 2
+            
+    return testWidth
+    
