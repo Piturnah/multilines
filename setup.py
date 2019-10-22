@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="multilines-Piturnah",
-    version="0.0.1",
+    version="0.1.0",
     author="Piturnah",
     author_email="peterhebden6@gmail.com",
     description="Beautification tools for text based devs",
