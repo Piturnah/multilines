@@ -5,6 +5,8 @@ Author: Pit
 
 Acknowledgements: Thanks to Will for highlighting the importance
 of automated boxes! You are my inspiration.
+
+Copyright (c) 2019 Peter Hebden under MIT License
 """
 
 
